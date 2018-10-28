@@ -1,1 +1,0 @@
-# Graphici_func
