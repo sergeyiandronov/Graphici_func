@@ -1,2 +1,8 @@
 ﻿  Source.cpp
+c:\users\сергей\source\repos\project6\project6\ariphmetic_parser.h(29): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\сергей\source\repos\project6\project6\ariphmetic_parser.h(49): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\сергей\source\repos\project6\project6\ariphmetic_parser.h(87): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\сергей\source\repos\project6\project6\source.cpp(25): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+c:\users\сергей\source\repos\project6\project6\source.cpp(26): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+c:\users\сергей\source\repos\project6\project6\source.cpp(75): warning C4101: ps: неиспользованная локальная переменная
   Project6.vcxproj -> C:\Users\Сергей\source\repos\Project6\Debug\Project6.exe
