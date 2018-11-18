@@ -100,7 +100,7 @@ public:
 			if (expression[i ] == ')') {		
 				braket_number--;
 			}
-			if ((expression[i] == '^'|| expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/') && priority < min_priority) {
+			if ((expression[i] == '^'|| expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/') && priority <= min_priority) {
 				min_priority = priority;
 				operationpos = i ;
 			}

@@ -1,29 +1,34 @@
 #include <windows.h>
+#include "resource.h"
 #include "ariphmetic_parser.h"
+HINSTANCE h;
 LRESULT CALLBACK MainWinProc(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp);
 ariphmetic_node *nodefunc = nullptr;
-void DrawFunc(HDC hDc, RECT field, ariphmetic_node func) {
+double ax, bx, ay, by;
+HWND MainWindow;
+void DrawFunc(HDC hDc, RECT field, ariphmetic_node func,double ax,double bx,double ay,double by) {
 	int width, height;
 	HPEN hpen;
 	hpen = CreatePen(PS_SOLID,0,0);
 	SelectObject(hDc, hpen);
 	height = field.bottom -field.top;
 	width = field.right - field.left;
-	int Oy = height / 2;
-	int Ox = width / 2;
+	int Oy = (double)height*std::abs(by)/(by-ay);
+	int Ox = (double)width*std::abs(ax) / (bx - ax);
 	MoveToEx(hDc, 0, Oy,0);
 	LineTo(hDc, width,  Oy);
 	MoveToEx(hDc, Ox, 0, 0);
 	LineTo(hDc, Ox, height);
 	std::vector<double> funcres;
 	for (int i = 1; i < 2000;i++) {
-		funcres.push_back(func.calc(-10+((double)i/2000)*20,0));
-		double f1 = func.calc(-10 + ((double)(i-1) / 2000) * 20, 0);
-		double x1 =  -0.5+((double)(i - 1) / 2000);
-		double f2 = func.calc(-10+((double)i/2000)*20,0);
-		double x2 = -0.5+((double)i/ 2000) ;
-		MoveToEx(hDc,Ox+ x1*(double)width,Oy-f1*Oy,  0);
-	    LineTo(hDc,Ox+x2*(double)width,Oy-f2*Oy);
+		funcres.push_back(func.calc(ax+((double)i/2000)*(bx-ax),0));
+		double f1 = func.calc(ax + ((double)(i-1) / 2000) * (bx-ax), 0);
+		double x1 =  ((double)(i - 1) / 2000);
+		double f2 = func.calc(ax+((double)i/2000)*(bx-ax),0);
+		double x2 = ((double)i/ 2000);
+		MoveToEx(hDc,x1*(double)width,Oy- (f1<0 ? (double)(height - Oy)*f1 / std::abs(ay) : (double)(Oy)*f1 / std::abs(by)),  0);
+	    LineTo(hDc,x2*(double)width,Oy-  (f2<0? (double)(height-Oy)*f2 / std::abs(ay): (double)(Oy)*f2 / std::abs(by)));
 	}
 	
 	DeleteObject(hpen);
@@ -49,7 +54,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR cmdline, int ss) {
 	if (!hMainWnd) return FALSE;
 	ShowWindow(hMainWnd, ss);
 	UpdateWindow(hMainWnd);
-	
+	h = hInst;
+	MainWindow = hMainWnd;
 
 	/* ÷икл обработки событий: */
 	MSG msg;
@@ -65,50 +71,25 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR cmdline, int ss) {
 
 LRESULT CALLBACK MainWinProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp) {
 	/* ќбработка сообщений главного окна */
-	HWND hWinBtn = 0;
-	int sx =0; //ширина
-	int sy = 0;//
-	LPSTR lptext = new char[100];
-	std::string text;
+	
 	RECT Rw;
 	HDC hDc;
 	PAINTSTRUCT ps;
+	HWND dlg;
 	
 	switch (msg) {
 	case WM_SIZE:
-	     hWinBtn = FindWindowEx(hw, NULL, NULL, "My edit"); 
-		 GetClientRect(hw, &Rw);
-		 sx = LOWORD(lp); //ширина
-		 sy = HIWORD(lp);//высота
-
-		SetWindowPos(
-			hWinBtn,           // дескриптор окна
-			HWND_TOP,       // дескриптор пор€дка размещени€
-			10,              // позици€ по горизонтали
-			sy-60,              // позици€ по вертикали
-			200,              // ширина
-			30,              // высота
-			0 // флажки позиционировани€ окна
-			);
-		hWinBtn = FindWindowEx(hw,NULL,NULL, "My button");
-		SetWindowPos(
-			hWinBtn,           // дескриптор окна
-			HWND_TOP,       // дескриптор пор€дка размещени€
-			280,              // позици€ по горизонтали
-			sy - 60,              // позици€ по вертикали
-			90,              // ширина
-			30,              // высота
-			0 // флажки позиционировани€ окна
-		);
+	  
+	
 
 
 		return 0;
 	case WM_CREATE:
-		hWinBtn=CreateWindow("edit", "My edit", WS_CHILD  | WS_VISIBLE| WS_BORDER,
-			0, 0, 500,500, hw, NULL, NULL, NULL);
-		hWinBtn = CreateWindow("button", "My button", WS_CHILD | WS_VISIBLE|WS_BORDER ,
-			0, 0, 1, 1, hw, NULL, NULL, NULL);
+		
+		dlg=CreateDialog(h, MAKEINTRESOURCE(IDD_DIALOG1), hw, DlgProc);
 
+		ShowWindow(dlg, SW_SHOW);
+		
 		/* ... */
 		return 0;
 	case WM_PAINT:
@@ -118,29 +99,13 @@ LRESULT CALLBACK MainWinProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp) {
 		GetClientRect(hw,&Rw);
 		Rectangle(hDc,0,0,Rw.right,Rw.bottom);
 		if (nodefunc != nullptr) {
-			DrawFunc(hDc, Rw, *nodefunc);
+			DrawFunc(hDc, Rw, *nodefunc,ax,bx,ay,by);
 		}
 		
 		ReleaseDC(hw,hDc);
 		break;
 	case WM_COMMAND:
-		if (HIWORD(wp) == BN_CLICKED) {
-			hWinBtn = FindWindowEx(hw,NULL,NULL,"My edit");
-			GetWindowText(hWinBtn,lptext,1000);
-			text = lptext;
-			nodefunc=new ariphmetic_node(text);
-			GetClientRect(hw,&Rw);
-			
-			try {
-			SetWindowText(hWinBtn, nodefunc->calc_str(1, 1).c_str());
-			hDc = GetDC(hw);
-			DrawFunc(hDc, Rw, *nodefunc);
-			ReleaseDC(hw, hDc);
-
-			}
-			catch (const char*e) { SetWindowText(hWinBtn, e); }
-			
-		}
+		
 		/* ... */
 		return 0;
 	
@@ -154,3 +119,69 @@ LRESULT CALLBACK MainWinProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp) {
 	}
 	return DefWindowProc(hw, msg, wp, lp);
 }
+BOOL CALLBACK DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp) {
+	HWND hEdit;
+	HWND hEax;
+	HWND hEay;
+	HWND hEbx;
+	HWND hEby;
+	std::istringstream strax;
+	std::istringstream strbx;
+	std::istringstream stray;
+	std::istringstream strby;
+	
+
+	LPSTR lptext = new char[100];
+	std::string text;
+	RECT Rw;
+	HDC hDc;
+	PAINTSTRUCT ps;
+	HWND dlg;
+	switch (msg) {
+	case WM_INITDIALOG: /* сообщение о создании диалога */
+		
+		return TRUE;
+	case WM_COMMAND:
+		if (LOWORD(wp) == 5) {
+			hEdit = GetDlgItem(hw, 4);
+			hEax = GetDlgItem(hw, 2);
+			hEbx = GetDlgItem(hw, 3);
+			hEay = GetDlgItem(hw, 1);
+			hEby = GetDlgItem(hw, 0);
+			GetWindowText(hEdit, lptext, 1000);
+			text = lptext;
+			nodefunc = new ariphmetic_node(text);
+			GetClientRect(MainWindow, &Rw);
+			GetWindowText(hEax, lptext, 1000);
+			strax = std::istringstream(lptext);
+			if(!(strax >> ax)) ax=-1;
+			GetWindowText(hEbx, lptext, 1000);
+			strbx = std::istringstream(lptext);
+			if (!(strbx >> bx)) bx = 1;
+			GetWindowText(hEay, lptext, 1000);
+			stray = std::istringstream(lptext);
+			if (!(stray >> ay)) ay = -1;
+			GetWindowText(hEby, lptext, 1000);
+			strby = std::istringstream(lptext);
+			if (!(strby >> by)) by = 1;
+
+
+			try {
+				SetWindowText(hEdit, nodefunc->calc_str(1, 1).c_str());
+				hDc = GetDC(MainWindow);
+				DrawFunc(hDc, Rw, *nodefunc, ax, bx, ay, by);
+				ReleaseDC(MainWindow, hDc);
+
+			}
+			catch (const char*e) { SetWindowText(hEdit, e); }
+
+		}/* сообщение от управл€ющих элементов */
+		return TRUE;
+	case WM_CLOSE:
+		EndDialog(hw, 0);
+		PostQuitMessage(0);
+		
+	}
+	return FALSE;
+}
+

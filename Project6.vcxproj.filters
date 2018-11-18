@@ -39,5 +39,8 @@
     <Image Include="..\..\..\..\Downloads\favicon.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="favicon.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>
