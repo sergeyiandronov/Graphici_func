@@ -4,7 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <cmath>
-const std::map<char, double> priorities = { {'+',0},{'-',0},{'*',0.5},{'/',0.5},{'^',0.1} };
+const std::map<char, double> priorities = { {'+',0},{'-',0},{'*',0.5},{'/',0.5},{'^',0.6} };
 class ariphmetic_node {
 	std::string	expression="";
     double number;
@@ -52,10 +52,83 @@ public:
 			}
 		}
 		while (parser_braket(expression));
-		if (expression.substr(0, 4) == "cos("&&expression[expression.length() - 1] == ')') {
+		
+		double min_priority=-1;
+		double priority=0;
+		int operationpos=-1;
+		int braket_number = 0;
+		char f=0;
+		std::string rightChilds;
+		std::string	leftChilds;
+		int i = 0;
+		if (expression.substr(0, 3) == "cos") {
+			f = 'c';
+			i = 3;
+		}
+		if (expression.substr(0, 3) == "tan") {
+			f = 't';
+			i = 3;
+		}
+		if (expression.substr(0, 3) == "sin") {
+			f = 's';
+			i = 3;
+		}
+		if (expression.substr(0, 1) == "-") {
+			f = 'm';
+			i = 1;
+		}
+		for (; i <expression.length();i++) {
+			if (expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/'||expression[i]=='^') {
+				
+				priority = braket_number + priorities.at(expression[i]);
+				if (min_priority == -1) {
+					min_priority = priority;
+					operationpos = i;
+				}
+			}
+			
+			if (expression[i ]=='(') {
+				braket_number++;
+			}
+			if (expression[i] == ')') {		
+				braket_number--;
+			}
+			if (braket_number == 0 && f && i==expression.length()-1) {
+				operation = f;
+				leftChild = nullptr;
+				rightChild = new ariphmetic_node(expression.substr((f == 'm' ? 1:3),(f!='m' ? i-2 : i )));
+				var = NULL;
+				number = -1;
+				return;
+
+			}
+			if (braket_number == 0 && f) {
+				f = 0;
+			}
+			if (braket_number < 0) {
+				throw "invalid syntax";
+			}
+			if ((expression[i] == '^'|| expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/') && priority <= min_priority) {
+				min_priority = priority;
+				operationpos = i ;
+			}
+			
+		}
+		if (operationpos != -1) {
+			leftChilds = expression.substr(0, operationpos);
+			rightChilds = expression.substr(operationpos+1 );
+			rightChild = new ariphmetic_node(rightChilds);
+			leftChild = new ariphmetic_node(leftChilds);
+			operation = expression[operationpos];
+			var = NULL;
+			number = -1;
+			return;
+
+		}
+		/*if (expression.substr(0, 4) == "cos("&&expression[expression.length() - 1] == ')') {
 			operation = 'c';
 			leftChild = nullptr;
-			rightChild = new ariphmetic_node(expression.substr(4, expression.length()-5 ));
+			rightChild = new ariphmetic_node(expression.substr(4, expression.length() - 5));
 			var = NULL;
 			number = -1;
 			return;
@@ -75,48 +148,7 @@ public:
 			var = NULL;
 			number = -1;
 			return;
-		}
-		double min_priority=-1;
-		double priority=0;
-		int operationpos=-1;
-		int braket_number = 0;
-		std::string rightChilds;
-		std::string	leftChilds;
-		
-        
-		for (int i = 0; i <expression.length();i++) {
-			if (expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/'||expression[i]=='^') {
-				
-				priority = braket_number + priorities.at(expression[i]);
-				if (min_priority == -1) {
-					min_priority = priority;
-					operationpos = i;
-				}
-			}
-			
-			if (expression[i ]=='(') {
-				braket_number++;
-			}
-			if (expression[i ] == ')') {		
-				braket_number--;
-			}
-			if ((expression[i] == '^'|| expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/') && priority <= min_priority) {
-				min_priority = priority;
-				operationpos = i ;
-			}
-			
-		}
-		if (operationpos != -1) {
-			leftChilds = expression.substr(0, operationpos);
-			rightChilds = expression.substr(operationpos+1 );
-			rightChild = new ariphmetic_node(rightChilds);
-			leftChild = new ariphmetic_node(leftChilds);
-			operation = expression[operationpos];
-			var = NULL;
-			number = -1;
-			return;
-
-		}
+		}*/
 		operation = NULL;
 		made_var_number();
 	}
@@ -153,6 +185,9 @@ public:
 			break;
 		case 'm':
 			return -rightChild->calc(x, y);
+			break;
+		case 't':
+			return tan(rightChild->calc(x,y));
 			break;
 		case NULL:
 			if (var == 'x') {
