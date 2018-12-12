@@ -52,14 +52,14 @@ void DrawFunc(HDC hDc, RECT field, ariphmetic_node func,double ax,double bx,doub
 	
 	HPEN hpenr = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
 	SelectObject(hDc, hpenr);
-	
-	for (int i = 1; i < 100*(bx-ax);i++) {
+	int det = ((bx - ax < 2) ? 200 : 100 * (bx - ax));
+	for (int i = 1; i < det;i++) {
 		double f1y;
 		double f2y;
-		double f1 = func.calc(ax + ((double)(i-1) / (100*(bx-ax))) * (bx-ax));
-		double x1 =  ((double)(i - 1) / (100*(bx-ax)));
-		double f2 = func.calc(ax+((double)i/ (100*(bx-ax)))*(bx-ax));
-		double x2 = ((double)i/ (100*(bx-ax)));
+		double f1 = func.calc(ax + ((double)(i-1) / det) * (bx-ax));
+		double x1 =  ((double)(i - 1) / det);
+		double f2 = func.calc(ax+((double)i/ det)*(bx-ax));
+		double x2 = ((double)i/ det);
 		f1y = (double)height / (by - ay)*f1;
 		f2y = (double)height / (by - ay)*f2;
 		if (f2  > by&&f1<ay) {
