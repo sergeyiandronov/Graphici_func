@@ -301,7 +301,7 @@ BOOL CALLBACK DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp) {
 
 			try {
 			
-				if (ax >= bx || ay>=by|| (bx-ax)>200|| (bx - ax)<0.002) {
+				if (ax >= bx || ay>=by|| (bx-ax)>200|| (bx - ax)<0.002|| (by - ay)>200 || (by - ay)<0.002) {
 					throw "недопустимый  диапазон";
 				}
 				GetWindowText(hEdit, lptext, 1000);
