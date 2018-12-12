@@ -8,42 +8,89 @@ ariphmetic_node *nodefunc = nullptr;
 double ax, bx, ay, by;
 HINSTANCE h;
 HWND MainWindow;
+
 void DrawFunc(HDC hDc, RECT field, ariphmetic_node func,double ax,double bx,double ay,double by) {
-	int width, height;
-	HPEN hpen = CreatePen(PS_SOLID,0,RGB(0,0,0));
 	
-	SelectObject(hDc, hpen);
+	int width, height ;
+	
+	int tenthx = round(log10(bx-ax));
+	int tenthy =round(log10(by-ay));
+	tenthx--;
+    tenthy--;
+	double tenx=pow(10,double(tenthx));
+	double teny = pow(10, double(tenthy));
+	
 	height = field.bottom -field.top;
 	width = field.right - field.left;
-	int Oy = (double)height*std::abs(by)/(by-ay);
-	int Ox = (double)width*std::abs(ax) / (bx - ax);
+	int Oy = (double)height*(max(ay,by))/(by-ay);
+	int Ox = (double)width*(-min(ax,bx)) / (bx - ax);
+	
+	HPEN hpengr = CreatePen(PS_SOLID, 0, RGB(160, 160, 160));
+	SelectObject(hDc, hpengr);
+	for (double i = double(ax<0 ? (int)(ax / pow(10, tenthx))*pow(10, tenthx) : pow(10, tenthx)); i<=bx; i += tenx) {
+		
+		MoveToEx(hDc, ((i - ax)*width) / (bx - ax), 0, 0);
+		LineTo(hDc, ((i - ax)*width) / (bx - ax), height);
+		std::string is = std::to_string((abs(i)<0.000001 ? 0: i));
+		TextOut(hDc, ((i - ax)*width) / (bx - ax)+1,height-20,is.c_str(),(i<0?abs(tenthx)+5:abs(tenthx)+4 ));
+	}
+	for (double i = double(ay<0 ? (int)(ay/pow(10, tenthy))*pow(10, tenthy) : pow(10, tenthy)); i<=by; i += teny) {
+		
+		MoveToEx(hDc, 0, height - ((i - ay)*height) / (by - ay), 0);
+		LineTo(hDc, width, height - ((i - ay)*height) / (by - ay));
+		std::string is = std::to_string((abs(i)<0.000001 ? 0 : i));
+		TextOut(hDc,width- (i<0 ? abs(tenthy) + 5 : abs(tenthy) + 4)* 10+(i<0 ? 5: 0), height - ((i - ay)*height) / (by - ay)+1, is.c_str(), (i<0 ? abs(tenthy) + 5 : abs(tenthy) + 4));
+	}
+	DeleteObject(hpengr);
+	HPEN hpen = CreatePen(PS_SOLID, 0, RGB(0, 0, 0));
+	SelectObject(hDc, hpen);
 	MoveToEx(hDc, 0, Oy,0);
 	LineTo(hDc, width,  Oy);
 	MoveToEx(hDc, Ox, 0, 0);
 	LineTo(hDc, Ox, height);
-	std::vector<double> funcres;
-	HPEN hpenr = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
 	DeleteObject(hpen);
+	
+	HPEN hpenr = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
 	SelectObject(hDc, hpenr);
 	
-	for (int i = 1; i < 2000;i++) {
-		funcres.push_back(func.calc(ax+((double)i/2000)*(bx-ax),0));
-		double f1 = func.calc(ax + ((double)(i-1) / 2000) * (bx-ax), 0);
-		double x1 =  ((double)(i - 1) / 2000);
-		double f2 = func.calc(ax+((double)i/2000)*(bx-ax),0);
-		double x2 = ((double)i/ 2000);
-		MoveToEx(hDc,x1*(double)width,Oy- (f1<0 ? (double)(height - Oy)*f1 / std::abs(ay) : (double)(Oy)*f1 / std::abs(by)),  0);
-	    LineTo(hDc,x2*(double)width,Oy-  (f2<0? (double)(height-Oy)*f2 / std::abs(ay): (double)(Oy)*f2 / std::abs(by)));
+	for (int i = 1; i < 100*(bx-ax);i++) {
+		double f1y;
+		double f2y;
+		double f1 = func.calc(ax + ((double)(i-1) / (100*(bx-ax))) * (bx-ax));
+		double x1 =  ((double)(i - 1) / (100*(bx-ax)));
+		double f2 = func.calc(ax+((double)i/ (100*(bx-ax)))*(bx-ax));
+		double x2 = ((double)i/ (100*(bx-ax)));
+		f1y = (double)height / (by - ay)*f1;
+		f2y = (double)height / (by - ay)*f2;
+		if (f2  > by&&f1<ay) {
+
+			
+			continue;
+		}
+		if (f2  < ay&&f1>by) {
+
+			
+			continue;
+		}
+		
+
+		
+		MoveToEx(hDc,x1*(double)width,Oy-f1y ,  0);
+	    LineTo(hDc,x2*(double)width,Oy-f2y);
 	}
 	
 	DeleteObject(hpenr);
-
+	
+	
 	
 }
 void save(HWND hw, HDC hDc,RECT field) {
 	BITMAPFILEHEADER bfh;
-	BITMAPINFOHEADER bih;
+	BYTE* memory;
 	BITMAPINFO bi;
+	BITMAPINFOHEADER bih;
+	
+	
 	
 	int height = field.bottom - field.top;
 	int width = field.right - field.left;
@@ -66,9 +113,9 @@ void save(HWND hw, HDC hDc,RECT field) {
 	bfh.bfReserved2 = 0;
 	bfh.bfOffBits = sizeof(BITMAPFILEHEADER) + bih.biSize;
 
-	BYTE* memory;
+	
 	HDC     hDcC = CreateCompatibleDC(hDc);
-	HBITMAP hBitmap = CreateDIBSection(hDc, &bi, DIB_RGB_COLORS, (void**)&memory, NULL, 0);;
+	HBITMAP hBitmap = CreateDIBSection(hDc, &bi, DIB_RGB_COLORS, (void**)&memory, NULL, 0);
 	HGDIOBJ old_obj = SelectObject(hDcC, hBitmap);
 	BOOL    bRet = BitBlt(hDcC, 0, 0, width, height, hDc, field.left, field.top, SRCCOPY);
 	OPENFILENAME ofn;//Указатель на структуру с данными инициализации диалогового окна
@@ -142,17 +189,14 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR cmdline, int ss) {
 
 LRESULT CALLBACK MainWinProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp) {
 	/* Обработка сообщений главного окна */
-	
+
 	RECT Rw;
 	HDC hDc;
 	HWND dlg;
 	
 	switch (msg) {
 	case WM_SIZE:
-	  
-	
-
-
+		
 		return 0;
 	case WM_CREATE:
 		
@@ -165,6 +209,8 @@ LRESULT CALLBACK MainWinProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp) {
 	case WM_PAINT:
 		
 		hDc = GetDC(hw);
+	    
+	    
 		
 		GetClientRect(hw,&Rw);
 		Rectangle(hDc,0,0,Rw.right,Rw.bottom);
@@ -173,7 +219,9 @@ LRESULT CALLBACK MainWinProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp) {
 		}
 		
 		ReleaseDC(hw,hDc);
+
 		break;
+	
 	case WM_COMMAND:
 		
 		if ((HIWORD(wp) == 0) && (LOWORD(wp) == ID_40001)) {
@@ -230,27 +278,36 @@ BOOL CALLBACK DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp) {
 			hEbx = GetDlgItem(hw, 3);
 			hEay = GetDlgItem(hw, 1);
 			hEby = GetDlgItem(hw, 0);
-			GetWindowText(hEdit, lptext, 1000);
-			text = lptext;
-			newnodefunc = new ariphmetic_node(text);
+			
 			GetClientRect(MainWindow, &Rw);
 			GetWindowText(hEax, lptext, 1000);
 			strax = std::istringstream(lptext);
 			if (!(strax >> ax)) { ax = -1; SetWindowText(hEax,"-1" );}
+			
 			GetWindowText(hEbx, lptext, 1000);
 			strbx = std::istringstream(lptext);
 			if (!(strbx >> bx)) { bx = 1 ; SetWindowText(hEbx, "1");}
+			
 			GetWindowText(hEay, lptext, 1000);
 			stray = std::istringstream(lptext);
 			if (!(stray >> ay)) { ay = -1; SetWindowText(hEay, "-1");}
+			
+			
 			GetWindowText(hEby, lptext, 1000);
 			strby = std::istringstream(lptext);
 			if (!(strby >> by)) { by = 1; SetWindowText(hEby, "1");}
-
+			
+			
 
 			try {
-			//	SetWindowText(hEdit, newnodefunc->calc_str(1, 1).c_str());
-				newnodefunc->calc_str(1, 1).c_str();
+			
+				if (ax >= bx || ay>=by|| (bx-ax)>200|| (bx - ax)<0.002) {
+					throw "недопустимый  диапазон";
+				}
+				GetWindowText(hEdit, lptext, 1000);
+				text = lptext;
+				newnodefunc = new ariphmetic_node(text);
+				newnodefunc->check_except();
 				nodefunc = newnodefunc;
 				hDc = GetDC(MainWindow);
 				Rectangle(hDc, 0, 0, Rw.right, Rw.bottom);
@@ -258,9 +315,9 @@ BOOL CALLBACK DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp) {
 				ReleaseDC(MainWindow, hDc);
 
 			}
-			catch (const char*e) { SetWindowText(hEdit, e);  }
+			catch (const char*e) { MessageBox(NULL,e,NULL,MB_OK); }
 
-		}/* сообщение от управляющих элементов */
+		} 
 		return TRUE;
 	case WM_CLOSE:
 		EndDialog(hw, 0);
