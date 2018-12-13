@@ -119,10 +119,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />
-    <ClCompile Include="ariphmetic_parser.cpp" />
+    <ClCompile Include="ariphmetic_node.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ariphmetic_parser.h" />
+    <ClInclude Include="ariphmetic_node.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

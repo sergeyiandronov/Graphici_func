@@ -18,7 +18,7 @@
     <ClCompile Include="Source.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="ariphmetic_parser.cpp">
+    <ClCompile Include="ariphmetic_node.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -26,7 +26,7 @@
     <ClInclude Include="resource.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="ariphmetic_parser.h">
+    <ClInclude Include="ariphmetic_node.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
   </ItemGroup>
