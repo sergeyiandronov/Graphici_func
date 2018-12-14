@@ -1,0 +1,22 @@
+﻿  Source.cpp
+Source.cpp(16): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+Source.cpp(17): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+Source.cpp(25): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+Source.cpp(26): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+Source.cpp(32): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+Source.cpp(33): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+Source.cpp(35): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+Source.cpp(39): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+Source.cpp(40): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+Source.cpp(42): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+Source.cpp(55): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+Source.cpp(78): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+Source.cpp(79): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+  ariphmetic_node.cpp
+ariphmetic_node.cpp(18): warning C4018: <: несоответствие типов со знаком и без знака
+ariphmetic_node.cpp(35): warning C4018: <: несоответствие типов со знаком и без знака
+ariphmetic_node.cpp(84): warning C4018: <: несоответствие типов со знаком и без знака
+  Создание кода
+  All 305 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  Project6.vcxproj -> C:\Users\Сергей\source\repos\Graphici_func\Release\Project6.exe

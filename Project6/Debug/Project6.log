@@ -1,2 +1,5 @@
-﻿  LINK : не найден или не выполнена сборка C:\Users\Сергей\source\repos\Graphici_func\Debug\Project6.exe при последней инкрементной компоновке; выполняется полная компоновка
+﻿  ariphmetic_node.cpp
+c:\users\сергей\source\repos\graphici_func\project6\ariphmetic_node.cpp(18): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\сергей\source\repos\graphici_func\project6\ariphmetic_node.cpp(35): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\сергей\source\repos\graphici_func\project6\ariphmetic_node.cpp(84): warning C4018: <: несоответствие типов со знаком и без знака
   Project6.vcxproj -> C:\Users\Сергей\source\repos\Graphici_func\Debug\Project6.exe

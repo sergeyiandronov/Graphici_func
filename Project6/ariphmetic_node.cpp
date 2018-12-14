@@ -16,10 +16,10 @@ void ariphmetic_node::made_var_number() {
 	else { var = NULL; }
 	int delim_number = 0;
 	for (int i = 0; i < expression.length(); i++) {
-		if (expression[i] == '.' || expression[i] == ',') {
+		if (expression[i] == '.' ) {
 			delim_number++;
 		}
-		if (!((expression[i] > 47 && expression[i] < 58 || (expression[i] == '.' || expression[i] == ',')) && delim_number<2)) {
+		if (!((expression[i] > 47 && expression[i] < 58 || (expression[i] == '.' )) && delim_number<2)) {
 			number = -1;
 			return;
 		}
@@ -256,7 +256,7 @@ void ariphmetic_node::check_except() {
 			if (number > 100) {
 				throw "слишком большие числа в выражении";
 			}
-			if (number < 0.001) {
+			if (number < 0.001&&number!=0) {
 				throw "слишком маленькие числа в выражении";
 			}
 			return;
